@@ -51,7 +51,7 @@ class CorrelationStrategy(bt.Strategy):
         self.buy(self.datas[0], size = size_first)
 
     def buys_sellf(self):
-        total_pos = 100*(self.broker.getcash())
+        total_pos = 40*(self.broker.getcash())
 
         a = self.dataclose_f[0]
         b = self.dataclose_s[0]
