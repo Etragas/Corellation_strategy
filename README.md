@@ -27,8 +27,8 @@ One stock is bouhgt and other is sold when:
 2. Theil coefficien crosses the upper (buy - 2, sell - 1) or lower bound (buy - 1, sell - 2)
 
 Accounting Pearson coeff helps, because during moments, when correlation break, not only ratio between prices changes, but a that moment correlation also weakens.
-
-тестовая картинка из файла с играми
+##### Blue line on the chart is Theil coef, yellow - Pearsons calculated for 2 sample sets of data. When Theil coefficient changes, Pearsons coef decreases
+![](chart_ex_corr.png)
 
 Boundaries are calculated as average +- running standart deviation * parameter. This is an exact formula for Bollinger bands, though in my case i made period for running standart deviation 2 times bigger then one for an average, as it resylted in smoother lines and more predictable results.
 
@@ -48,14 +48,9 @@ Boundaries are calculated as explained earlier.
 
 ## Results
 
-Strategy results in average of 10% per year and sharpe coeffiscient ((average year percentage - zero risk percentage) / std deviation of portfolio) 0.38 which is considered very bad. On the graph below green and red triangles represent executed buy/sell orders. On the top graph red line - value of account.
+Strategy results in 218% for 9 years of test (annualised 9%) and sharpe coeffiscient ((average year percentage - zero risk percentage) / std deviation of portfolio) 0.38 which is considered very bad. On the graph below green and red triangles represent executed buy/sell orders. On the top graph red line - value of account.
 
 ![](chart_1.png)
 
 ## Concerns
-1. All profit is geneerated during first 5 years ( данные для тех 5 лет ). Low sharpe coefficient as a consequence. My explanation for this is that at the same period when profit vanishes, std of Theil coefficent gets rough and wave-like. The same problem occured when I was initially testing on 20 years of data. On first 10 algorithm performed nice, then it was only loosing.
-In machine learning this problem is usually fought with deviding learning and testing data. But with trading market appearance obviously changes, but it's hard to tell how fast and evaluate correct time range for trading. -- пофиксилось
-
-2. Not many trades. 17 pduring 9 years. They also come in seqences of 4-5, so most of the time strategy remains unactive.
-
-3. 
+There aren't many trades - only 17. Also most of them are performed in sequences of 5-6 whithin 3-6 months. So most of the time there are no trades executed. That all results in risk that exceeds normal ~3 times.
