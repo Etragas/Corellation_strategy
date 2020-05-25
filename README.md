@@ -1,4 +1,4 @@
-# Correlation strategy bot
+# This's a trading bot
 This is a stock bot that looks at prices of 2 stocks and decides when to buy and sell each of them.
 This strategy is based on  idea, that some stocks tend to maintain their correlation.  So betting against fluctuations of their correlaltion can generate profit.
 
@@ -22,27 +22,40 @@ python libraries:
 ## Opening trades
 Let Theil coefficient = dPriceOf1/dPriceOf2
 
-1 stock is bought and 2 is sold when:
+One stock is bouhgt and other is sold when:
 1. Pearson coefficient is low enough
-2. Theil coefficien crosses the lower bound
+2. Theil coefficien crosses the upper (buy - 2, sell - 1) or lower bound (buy - 1, sell - 2)
 
-2 stock is bought and 1 is sold when:
-1. Pearson coefficient is low enough
-2. Theil coefficien crosses the upper bound
+Accounting Pearson coeff helps, because during moments, when correlation break, not only ratio between prices changes, but a that moment correlation also weakens.
+
+тестовая картинка из файла с играми
+
+Boundaries are calculated as average +- running standart deviation * parameter. This is an exact formula for Bollinger bands, though in my case i made period for running standart deviation 2 times bigger then one for an average, as it resylted in smoother lines and more predictable results.
 
 Money for a whole trade is devided equally and each part is spent on buying/selling each stock, so balance of account stays unchanged.
 Also it makes both stocks equally affect the outcome despite differences in price.
  
 
 
-Buying 
-###### Opening trades
+# Closing Trades
 
-###### Closig trades
-bb
+Trades close when:
+1. Profit or loss are bigger then thresholds.
+2. Theil coefficient crosses upper or lower boundaries.
+3. It's the last day of used testing data
+
+Boundaries are calculated as explained earlier.
 
 ## Results
-cc
+
+Strategy results in average of 10% per year and sharpe coeffiscient ((average year percentage - zero risk percentage) / std deviation of portfolio) 0.38 which is considered very bad. On the graph below green and red triangles represent executed buy/sell orders. On the top graph red line - cash of an account, blue - account's value.
+
+Пикча
 
 ## Concerns
-ddd
+1. All profit is geneerated during first 5 years ( данные для тех 5 лет ). Low sharpe coefficient as a consequence. My explanation for this is that at the same period when profit vanishes, std of Theil coefficent gets rough and wave-like. The same problem occured when I was initially testing on 20 years of data. On first 10 algorithm performed nice, then it was only loosing.
+In machine learning this problem is usually fought with deviding learning and testing data. But with trading market appearance obviously changes, but it's hard to tell how fast and evaluate correct time range for trading.
+
+2. Not many trades. 17 pduring 9 years. They also come in seqences of 4-5, so most of the time strategy remains unactive.
+
+3. 
