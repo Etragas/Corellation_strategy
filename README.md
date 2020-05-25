@@ -37,7 +37,7 @@ Also it makes both stocks equally affect the outcome despite differences in pric
  
 
 
-# Closing Trades
+## Closing Trades
 
 Trades close when:
 1. Profit or loss are bigger then thresholds.
@@ -50,7 +50,7 @@ Boundaries are calculated as explained earlier.
 
 Strategy results in average of 10% per year and sharpe coeffiscient ((average year percentage - zero risk percentage) / std deviation of portfolio) 0.38 which is considered very bad. On the graph below green and red triangles represent executed buy/sell orders. On the top graph red line - cash of an account, blue - account's value.
 
-Пикча
+![github-large](https://github.com/Skovorp/Corellation_strategy/chart_1.png)
 
 ## Concerns
 1. All profit is geneerated during first 5 years ( данные для тех 5 лет ). Low sharpe coefficient as a consequence. My explanation for this is that at the same period when profit vanishes, std of Theil coefficent gets rough and wave-like. The same problem occured when I was initially testing on 20 years of data. On first 10 algorithm performed nice, then it was only loosing.
