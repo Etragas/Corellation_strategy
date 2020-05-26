@@ -3,7 +3,7 @@ This is a stock bot that looks at prices of 2 stocks and decides when to buy and
 This strategy is based on  idea, that some stocks tend to maintain their correlation.  So betting against fluctuations of their correlaltion can generate profit.
 
 ## Math
-To estimate correlation I've used running Theil and Pearson correlation coeffisients between prices of 2 stocks.
+To estimate correlation I've used running Theil and Pearson correlation coefficients between prices of 2 stocks.
 Theil(Y, X) estemates average ratio dY/dX. Order in which arguments are passed is important (Theil(Y, X) ≠ 1 / Theil(X, Y)) https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator \
 Pearson estemates how strong correlation is. Ranges from -1 to 1, where 1 is exact positive correlation and -1 is exact negative. Doesn't depend on order of arguments https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
 
