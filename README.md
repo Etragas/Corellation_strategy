@@ -48,12 +48,12 @@ Boundaries are calculated as explained above.
 
 ## Results
 
-Strategy results in 218% for 9 years of test (annualised 9%) and Sharpe coeffiscient ((average year profit percentage - zero risk profit percentage) / std deviation of portfolio) 0.38 which is considered very bad. On the graph below green and red triangles represent executed buy/sell orders. Red line on the top graph is value of account.
+Strategy results in 218% for 9 years of test (annualised 9%) and Sharpe coeffiscient ((average year profit percentage - zero risk profit percentage) / std deviation of portfolio) 0.38 which is considered very bad (normally it's >1) . On the graph below green and red triangles represent executed buy/sell orders. Red line on the top graph is value of account.
 
 ![](chart_1.png)
 
 ## Concerns
-There aren't many trades - only 17. Also most of them are performed in sequences of 5-6 whithin 3-6 months. So most of the time there are no trades executed. It results in risk that exceeds normal by ~3 times.
+There aren't many trades - only 17. Also most of them are performed in sequences of 5-6 whithin 3-6 months. So most of the time there are no trades executed. It results in risk that exceeds normal by ~3 times for this yield (calculations are based on Sharpe coefficient)
 
 
 
