@@ -27,8 +27,8 @@ One stock is bought and other is sold when:
 1. Pearson coefficient is low enough
 2. Theil coefficien crosses the upper (buy - asset 2, sell - asset 1) or lower bound (buy - asset 1, sell - asset 2)
 
-##### Blue line on the chart is Theil coef, yellow - Pearsons calculated for 2 sample sets of data. When Theil coefficient changes, Pearsons coef decreases
-![](chart_ex_corr.png)
+##### Blue line on the chart is Theil coef, yellow - Pearsons calculated for 2 sample sets of data. Logarithmic scale is chosen for Theil coefficient for being "invariant" to changing every point y to 1/y. When Theil coefficient changes, Pearsons coef decreases
+![](chart_log.png)
 
 Boundaries are calculated as average +- running standart deviation * parameter. This is an exact formula for Bollinger bands, though in in algorithm period for running standard deviation is twice as big as for an average. It makes smoother lines and more predictable results.
 
