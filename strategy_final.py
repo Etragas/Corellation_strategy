@@ -4,7 +4,7 @@ import numpy as np
 from scipy import stats
 
 
-class Pearson (bt.Indicator):
+class Pearson(bt.Indicator):
     # Calculates moving pearson correlation coefficient
     lines = ('pearson',)
     params = (('period', 20),)
@@ -13,10 +13,11 @@ class Pearson (bt.Indicator):
         self.addminperiod(self.params.period)
 
     def next(self):
-        self.lines.pearson[0] = (np.corrcoef(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0][1]
+        self.lines.pearson[0] = \
+            (np.corrcoef(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0][1]
 
 
-class Deviation (bt.Indicator):
+class Deviation(bt.Indicator):
     # Calculates moving standard deviation
     lines = ('std',)
     params = (('period', 20),)
@@ -28,7 +29,7 @@ class Deviation (bt.Indicator):
         self.lines.std[0] = np.std(self.datas[0].get(size=self.p.period))
 
 
-class Theil (bt.Indicator):
+class Theil(bt.Indicator):
     # Calculates moving theil index
     lines = ('theil',)
     params = (('period', 20),)
@@ -36,11 +37,12 @@ class Theil (bt.Indicator):
     def __init__(self):
         self.addminperiod(self.params.period)
 
-    def next(self): #0/1
-        self.lines.theil[0] = (stats.theilslopes(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0]
+    def next(self):  # 0/1
+        self.lines.theil[0] = \
+            (stats.theilslopes(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0]
 
 
-class Average (bt.Indicator):
+class Average(bt.Indicator):
     # Calculates simple moving average
     lines = ('average',)
     params = (('period', 20),)
@@ -48,23 +50,24 @@ class Average (bt.Indicator):
     def __init__(self):
         self.addminperiod(self.params.period)
 
-    def next(self): #0/1
+    def next(self):  # 0/1
         self.lines.average[0] = np.mean(self.datas[0].get(size=self.p.period))
+
 
 class CorrelationStrategy(bt.Strategy):
     # List of all parameters
     # They are all integers for easier testing
     params = (('period', 15),
-            ('bol_k_up', 20),
-            ('bol_k_down', 20),
-            ('bol_k_close', 6),
-            ('th_pear_d', 49),
-            ('th_pear_u', 50),
-            ('sl_per', -6),
-            ('tp_per', 6),
-            ('money_k', 40),
-            ('period_close', 75),
-            ('prolong', 2.3),)
+              ('bol_k_up', 20),
+              ('bol_k_down', 20),
+              ('bol_k_close', 6),
+              ('th_pear_d', 49),
+              ('th_pear_u', 50),
+              ('sl_per', -6),
+              ('tp_per', 6),
+              ('money_k', 40),
+              ('period_close', 75),
+              ('prolong', 2.3),)
 
     def buyf_sells(self):
         # Creates buy order for 1st stock and sell order for 2nd stock
@@ -88,14 +91,13 @@ class CorrelationStrategy(bt.Strategy):
         a = self.dataclose_f[0]
         b = self.dataclose_s[0]
 
-        # Money are equally splitted between 2 trades for equal impact
+        # Money are equally split between 2 trades for equal impact
         size_first = total_pos / (2 * a)
         size_second = total_pos / (2 * b)
 
         # The same amount of money is spent executing buy order as there's gained from sell
         self.sell(self.datas[0], size=size_first)
         self.buy(self.datas[1], size=size_second)
-
 
     def __init__(self):
         # Calculates all the indexes and datas
@@ -105,7 +107,7 @@ class CorrelationStrategy(bt.Strategy):
         self.Theil = Theil(self.datas[0], self.datas[1], period=self.params.period)
         self.aver_Theil = Average(self.Theil, period=self.params.period_close)
         # Period for standard deviation is longer to be less volatile (like envelope indicator)
-        self.std_Theil = Deviation(self.Theil, period=round(self.params.period_close*self.params.prolong))
+        self.std_Theil = Deviation(self.Theil, period=round(self.params.period_close * self.params.prolong))
 
     def next(self):
         # If there are no positions at the moment, new can be opened
@@ -117,10 +119,12 @@ class CorrelationStrategy(bt.Strategy):
             u_boundary = self.aver_Theil + std_range * self.params.bol_k_up / 100
             d_boundary = self.aver_Theil - std_range * self.params.bol_k_down / 100
 
-            if (self.Theil[-1] > d_boundary) and (self.Theil[0] < d_boundary) and (self.Pearson[0] < self.params.th_pear_d / 100):
+            if (self.Theil[-1] > d_boundary) and (self.Theil[0] < d_boundary) and (
+                    self.Pearson[0] < self.params.th_pear_d / 100):
                 self.buyf_sells()
 
-            if (self.Theil[-1] < u_boundary) and (self.Theil[0] > u_boundary) and (self.Pearson[0] < self.params.th_pear_u /100):
+            if (self.Theil[-1] < u_boundary) and (self.Theil[0] > u_boundary) and (
+                    self.Pearson[0] < self.params.th_pear_u / 100):
                 self.buys_sellf()
 
         # Logic for closing existing positions
@@ -151,7 +155,7 @@ class CorrelationStrategy(bt.Strategy):
                 return
 
             # Closed when pnl is out of boundaries
-            if (pnl < self.params.sl_per/100) or (pnl > self.params.tp_per/100):
+            if (pnl < self.params.sl_per / 100) or (pnl > self.params.tp_per / 100):
                 if (p1.size > 0) and (p2.size < 0):
                     self.close(self.datas[0])
                     self.close(self.datas[1])
@@ -162,7 +166,7 @@ class CorrelationStrategy(bt.Strategy):
                     return
 
             # Closing all trades at the last day
-            if (str(self.datas[0].datetime.date(0)) == "2020-02-13"):
+            if str(self.datas[0].datetime.date(0)) == "2020-02-13":
                 if (p1.size > 0) and (p2.size < 0):
                     self.close(self.datas[0])
                     self.close(self.datas[1])
@@ -175,7 +179,8 @@ class CorrelationStrategy(bt.Strategy):
     def stop(self):
         print("Profit:", self.broker.getvalue() - 10000)
         if (self.broker.getvalue() - 10000) > 0:
-            print("Average annual percent:", (round(((((self.broker.getvalue()))/10000)**(1/9)), 3)) * 100 - 100)
+            print("Average annual percent:", (round((((self.broker.getvalue()) / 10000) ** (1 / 9)), 3)) * 100 - 100)
+
 
 if __name__ == '__main__':
     cerebro = bt.Cerebro()
@@ -198,7 +203,6 @@ if __name__ == '__main__':
 
     # Risk free rate from Sberbank dollar deposit
     cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name='sharpe', riskfreerate=0.0025)
-
 
     thestrats = cerebro.run()
 

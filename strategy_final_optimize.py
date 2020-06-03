@@ -4,7 +4,7 @@ import numpy as np
 from scipy import stats
 
 
-class Pearson (bt.Indicator):
+class Pearson(bt.Indicator):
     # Calculates moving pearson correlation coefficient
     lines = ('pearson',)
     params = (('period', 20),)
@@ -13,10 +13,11 @@ class Pearson (bt.Indicator):
         self.addminperiod(self.params.period)
 
     def next(self):
-        self.lines.pearson[0] = (np.corrcoef(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0][1]
+        self.lines.pearson[0] = \
+        (np.corrcoef(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0][1]
 
 
-class Deviation (bt.Indicator):
+class Deviation(bt.Indicator):
     # Calculates moving standard deviation
     lines = ('std',)
     params = (('period', 20),)
@@ -28,7 +29,7 @@ class Deviation (bt.Indicator):
         self.lines.std[0] = np.std(self.datas[0].get(size=self.p.period))
 
 
-class Theil (bt.Indicator):
+class Theil(bt.Indicator):
     # Calculates moving theil index
     lines = ('theil',)
     params = (('period', 20),)
@@ -36,11 +37,12 @@ class Theil (bt.Indicator):
     def __init__(self):
         self.addminperiod(self.params.period)
 
-    def next(self): #0/1
-        self.lines.theil[0] = (stats.theilslopes(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0]
+    def next(self):  # 0/1
+        self.lines.theil[0] = \
+        (stats.theilslopes(self.datas[0].get(size=self.p.period), self.datas[1].get(size=self.p.period)))[0]
 
 
-class Average (bt.Indicator):
+class Average(bt.Indicator):
     # Calculates simple moving average
     lines = ('average',)
     params = (('period', 20),)
@@ -48,23 +50,24 @@ class Average (bt.Indicator):
     def __init__(self):
         self.addminperiod(self.params.period)
 
-    def next(self): #0/1
+    def next(self):  # 0/1
         self.lines.average[0] = np.mean(self.datas[0].get(size=self.p.period))
+
 
 class CorrelationStrategy(bt.Strategy):
     # List of all parameters
     # They are all integers for easier testing
     params = (('period', 15),
-            ('bol_k_up', 20),
-            ('bol_k_down', 20),
-            ('bol_k_close', 6),
-            ('th_pear_d', 49),
-            ('th_pear_u', 50),
-            ('sl_per', -6),
-            ('tp_per', 6),
-            ('money_k', 40),
-            ('period_close', 75),
-            ('prolong', 2.3),)
+              ('bol_k_up', 20),
+              ('bol_k_down', 20),
+              ('bol_k_close', 6),
+              ('th_pear_d', 49),
+              ('th_pear_u', 50),
+              ('sl_per', -6),
+              ('tp_per', 6),
+              ('money_k', 40),
+              ('period_close', 75),
+              ('prolong', 2.3),)
 
     def buyf_sells(self):
         # Creates buy order for 1st stock and sell order for 2nd stock
@@ -96,7 +99,6 @@ class CorrelationStrategy(bt.Strategy):
         self.sell(self.datas[0], size=size_first)
         self.buy(self.datas[1], size=size_second)
 
-
     def __init__(self):
         # Calculates all the indexes and datas
         self.dataclose_f = self.datas[0].close
@@ -105,7 +107,7 @@ class CorrelationStrategy(bt.Strategy):
         self.Theil = Theil(self.datas[0], self.datas[1], period=self.params.period)
         self.aver_Theil = Average(self.Theil, period=self.params.period_close)
         # Period for standard deviation is longer to be less volatile (like envelope indicator)
-        self.std_Theil = Deviation(self.Theil, period=round(self.params.period_close*self.params.prolong))
+        self.std_Theil = Deviation(self.Theil, period=round(self.params.period_close * self.params.prolong))
 
     def next(self):
         # If there are no positions at the moment, new can be opened
@@ -117,10 +119,12 @@ class CorrelationStrategy(bt.Strategy):
             u_boundary = self.aver_Theil + std_range * self.params.bol_k_up / 100
             d_boundary = self.aver_Theil - std_range * self.params.bol_k_down / 100
 
-            if (self.Theil[-1] > d_boundary) and (self.Theil[0] < d_boundary) and (self.Pearson[0] < self.params.th_pear_d / 100):
+            if (self.Theil[-1] > d_boundary) and (self.Theil[0] < d_boundary) and (
+                    self.Pearson[0] < self.params.th_pear_d / 100):
                 self.buyf_sells()
 
-            if (self.Theil[-1] < u_boundary) and (self.Theil[0] > u_boundary) and (self.Pearson[0] < self.params.th_pear_u /100):
+            if (self.Theil[-1] < u_boundary) and (self.Theil[0] > u_boundary) and (
+                    self.Pearson[0] < self.params.th_pear_u / 100):
                 self.buys_sellf()
 
         # Logic for closing existing positions
@@ -151,7 +155,7 @@ class CorrelationStrategy(bt.Strategy):
                 return
 
             # Closed when pnl is out of boundaries
-            if (pnl < self.params.sl_per/100) or (pnl > self.params.tp_per/100):
+            if (pnl < self.params.sl_per / 100) or (pnl > self.params.tp_per / 100):
                 if (p1.size > 0) and (p2.size < 0):
                     self.close(self.datas[0])
                     self.close(self.datas[1])
@@ -183,23 +187,24 @@ class CorrelationStrategy(bt.Strategy):
               self.params.period_close,
               self.params.prolong)
 
+
 if __name__ == '__main__':
     # If more cpus used, memory error eventually occurs (for my core i7)
-    cerebro = bt.Cerebro(maxcpus = 4,stdstats=False)
+    cerebro = bt.Cerebro(maxcpus=4, stdstats=False)
 
     # Arrays with possible values can be assigned for each parameter
     strats = cerebro.optstrategy(
         CorrelationStrategy,
-        period = 15,
-        bol_k_up = 20,
-        bol_k_down = 25,
-        bol_k_close = range(1, 30, 5),
-        th_pear = 49,
-        sl_per = range(-22, -1, 5),
-        tp_per = range(1, 22, 5),
-        money_k = 10,
-        period_close = 75,
-        prolong = 2.3)
+        period=15,
+        bol_k_up=20,
+        bol_k_down=25,
+        bol_k_close=range(1, 30, 5),
+        th_pear=49,
+        sl_per=range(-22, -1, 5),
+        tp_per=range(1, 22, 5),
+        money_k=10,
+        period_close=75,
+        prolong=2.3)
 
     # Order of stocks should be the same in both files
     data_f = btfeeds.GenericCSVData(dataname='NOC_10.csv', openinterest=-1, dtformat="%Y-%m-%d", tmformat=-1)
@@ -215,7 +220,6 @@ if __name__ == '__main__':
     # Can't execute deals with volume bigger then 1% of market volume during that day
     filler = bt.broker.fillers.FixedSize()
     cerebro.broker.set_filler(bt.broker.fillers.FixedBarPerc(perc=1))
-
 
     thestrats = cerebro.run()
     thestrat = thestrats[0]
